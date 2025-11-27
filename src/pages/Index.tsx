@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -7,6 +7,8 @@ import { Label } from '@/components/ui/label';
 import { Separator } from '@/components/ui/separator';
 import Icon from '@/components/ui/icon';
 import { QRCodeSVG } from 'qrcode.react';
+import html2canvas from 'html2canvas';
+import { useToast } from '@/hooks/use-toast';
 
 const templates = [
   { id: 1, name: 'Классика', color: '#1A1F2C', accent: '#8B5CF6', style: 'classic' },
@@ -26,6 +28,8 @@ const Index = () => {
     logoText: 'МК',
     cardNumber: '1234 5678',
   });
+  const cardRef = useRef<HTMLDivElement>(null);
+  const { toast } = useToast();
 
   const handleTemplateSelect = (template: typeof templates[0]) => {
     setSelectedTemplate(template);
@@ -33,6 +37,50 @@ const Index = () => {
       ...cardData,
       backgroundColor: template.color,
       accentColor: template.accent,
+    });
+  };
+
+  const handleExportCard = async () => {
+    if (!cardRef.current) return;
+    
+    try {
+      const canvas = await html2canvas(cardRef.current, {
+        backgroundColor: null,
+        scale: 2,
+        logging: false,
+      });
+      
+      const link = document.createElement('a');
+      link.download = `loyalty-card-${cardData.cardNumber.replace(/\s/g, '')}.png`;
+      link.href = canvas.toDataURL('image/png');
+      link.click();
+      
+      toast({
+        title: 'Карта экспортирована!',
+        description: 'Файл успешно скачан на ваше устройство',
+      });
+    } catch (error) {
+      toast({
+        title: 'Ошибка экспорта',
+        description: 'Не удалось экспортировать карту',
+        variant: 'destructive',
+      });
+    }
+  };
+
+  const handleReset = () => {
+    setCardData({
+      businessName: 'Моя компания',
+      cardholderName: 'Иван Иванов',
+      discount: '10',
+      backgroundColor: selectedTemplate.color,
+      accentColor: selectedTemplate.accent,
+      logoText: 'МК',
+      cardNumber: '1234 5678',
+    });
+    toast({
+      title: 'Сброшено',
+      description: 'Настройки карты возвращены к начальным значениям',
     });
   };
 
@@ -220,6 +268,7 @@ const Index = () => {
 
               <div className="flex items-center justify-center p-12">
                 <div 
+                  ref={cardRef}
                   className="w-full max-w-md aspect-[1.586/1] rounded-2xl shadow-2xl p-8 relative overflow-hidden transition-all duration-300"
                   style={{ backgroundColor: cardData.backgroundColor }}
                 >
@@ -312,11 +361,11 @@ const Index = () => {
             </Card>
 
             <div className="grid grid-cols-2 gap-4">
-              <Button variant="outline" className="h-14 text-base">
+              <Button variant="outline" className="h-14 text-base" onClick={handleReset}>
                 <Icon name="RotateCcw" size={20} className="mr-2" />
                 Сбросить
               </Button>
-              <Button className="h-14 text-base">
+              <Button className="h-14 text-base" onClick={handleExportCard}>
                 <Icon name="Download" size={20} className="mr-2" />
                 Экспортировать
               </Button>
