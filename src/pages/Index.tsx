@@ -9,12 +9,141 @@ import Icon from '@/components/ui/icon';
 import { QRCodeSVG } from 'qrcode.react';
 import html2canvas from 'html2canvas';
 import { useToast } from '@/hooks/use-toast';
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import { Badge } from '@/components/ui/badge';
 
 const templates = [
   { id: 1, name: 'Классика', color: '#1A1F2C', accent: '#8B5CF6', style: 'classic' },
   { id: 2, name: 'Минимал', color: '#FFFFFF', accent: '#000000', style: 'minimal' },
   { id: 3, name: 'Премиум', color: '#000000', accent: '#FFD700', style: 'premium' },
   { id: 4, name: 'Модерн', color: '#F3F4F6', accent: '#0EA5E9', style: 'modern' },
+];
+
+const casesData = [
+  {
+    id: 1,
+    category: 'Кафе и Рестораны',
+    icon: 'Coffee',
+    cases: [
+      {
+        id: 11,
+        name: 'Кофейня Aroma',
+        businessName: 'Aroma Coffee',
+        cardholderName: 'Анна Смирнова',
+        discount: '15',
+        backgroundColor: '#3E2723',
+        accentColor: '#D4A574',
+        logoText: 'AC',
+        cardNumber: '2847 1923',
+        description: 'Уютная кофейня с авторскими напитками'
+      },
+      {
+        id: 12,
+        name: 'Ресторан Gusto',
+        businessName: 'Gusto Italiano',
+        cardholderName: 'Пётр Волков',
+        discount: '20',
+        backgroundColor: '#1B5E20',
+        accentColor: '#FF6B6B',
+        logoText: 'GI',
+        cardNumber: '9183 4756',
+        description: 'Итальянская кухня в сердце города'
+      }
+    ]
+  },
+  {
+    id: 2,
+    category: 'Красота и Здоровье',
+    icon: 'Sparkles',
+    cases: [
+      {
+        id: 21,
+        name: 'Салон BeautyBar',
+        businessName: 'BeautyBar Studio',
+        cardholderName: 'Елена Новикова',
+        discount: '25',
+        backgroundColor: '#FF69B4',
+        accentColor: '#FFFFFF',
+        logoText: 'BB',
+        cardNumber: '5472 8193',
+        description: 'Премиальный салон красоты'
+      },
+      {
+        id: 22,
+        name: 'Фитнес FitLife',
+        businessName: 'FitLife Gym',
+        cardholderName: 'Дмитрий Козлов',
+        discount: '30',
+        backgroundColor: '#000000',
+        accentColor: '#00FF00',
+        logoText: 'FL',
+        cardNumber: '3948 2756',
+        description: 'Современный фитнес-клуб'
+      }
+    ]
+  },
+  {
+    id: 3,
+    category: 'Ритейл и Мода',
+    icon: 'ShoppingBag',
+    cases: [
+      {
+        id: 31,
+        name: 'Бутик StyleHub',
+        businessName: 'StyleHub Fashion',
+        cardholderName: 'Мария Петрова',
+        discount: '10',
+        backgroundColor: '#FFFFFF',
+        accentColor: '#000000',
+        logoText: 'SH',
+        cardNumber: '7264 1938',
+        description: 'Трендовая одежда и аксессуары'
+      },
+      {
+        id: 32,
+        name: 'Обувь ShoeLuxe',
+        businessName: 'ShoeLuxe Store',
+        cardholderName: 'Александр Иванов',
+        discount: '18',
+        backgroundColor: '#8B4513',
+        accentColor: '#FFD700',
+        logoText: 'SL',
+        cardNumber: '4859 3027',
+        description: 'Премиум обувь для вас'
+      }
+    ]
+  },
+  {
+    id: 4,
+    category: 'Услуги и Сервис',
+    icon: 'Briefcase',
+    cases: [
+      {
+        id: 41,
+        name: 'Автосервис AutoPro',
+        businessName: 'AutoPro Service',
+        cardholderName: 'Сергей Кузнецов',
+        discount: '12',
+        backgroundColor: '#1A1F2C',
+        accentColor: '#FF4500',
+        logoText: 'AP',
+        cardNumber: '6284 9371',
+        description: 'Профессиональный ремонт авто'
+      },
+      {
+        id: 42,
+        name: 'Клининг CleanHome',
+        businessName: 'CleanHome Pro',
+        cardholderName: 'Ольга Соколова',
+        discount: '22',
+        backgroundColor: '#0EA5E9',
+        accentColor: '#FFFFFF',
+        logoText: 'CH',
+        cardNumber: '1947 5628',
+        description: 'Профессиональная уборка'
+      }
+    ]
+  }
 ];
 
 const Index = () => {
@@ -28,6 +157,8 @@ const Index = () => {
     logoText: 'МК',
     cardNumber: '1234 5678',
   });
+  const [showCases, setShowCases] = useState(false);
+  const [selectedCase, setSelectedCase] = useState<any>(null);
   const cardRef = useRef<HTMLDivElement>(null);
   const { toast } = useToast();
 
@@ -84,6 +215,23 @@ const Index = () => {
     });
   };
 
+  const handleApplyCase = (caseData: any) => {
+    setCardData({
+      businessName: caseData.businessName,
+      cardholderName: caseData.cardholderName,
+      discount: caseData.discount,
+      backgroundColor: caseData.backgroundColor,
+      accentColor: caseData.accentColor,
+      logoText: caseData.logoText,
+      cardNumber: caseData.cardNumber,
+    });
+    setShowCases(false);
+    toast({
+      title: 'Кейс применён!',
+      description: `Шаблон "${caseData.name}" загружен в редактор`,
+    });
+  };
+
   return (
     <div className="min-h-screen bg-background">
       <header className="border-b border-border sticky top-0 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 z-50">
@@ -103,9 +251,9 @@ const Index = () => {
               <Icon name="FolderOpen" size={16} className="mr-2" />
               Библиотека
             </Button>
-            <Button variant="ghost" className="text-sm font-medium">
+            <Button variant="ghost" className="text-sm font-medium" onClick={() => setShowCases(true)}>
               <Icon name="Sparkles" size={16} className="mr-2" />
-              Шаблоны
+              Кейсы
             </Button>
             <Button variant="ghost" className="text-sm font-medium">
               <Icon name="User" size={16} className="mr-2" />
@@ -458,6 +606,117 @@ const Index = () => {
           </div>
         </div>
       </div>
+
+      <Dialog open={showCases} onOpenChange={setShowCases}>
+        <DialogContent className="max-w-6xl max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle className="text-2xl flex items-center gap-2">
+              <Icon name="Sparkles" size={24} />
+              Библиотека кейсов
+            </DialogTitle>
+            <DialogDescription>
+              Примеры карт лояльности из разных сфер бизнеса
+            </DialogDescription>
+          </DialogHeader>
+
+          <div className="space-y-8 py-4">
+            {casesData.map((category) => (
+              <div key={category.id}>
+                <div className="flex items-center gap-2 mb-4">
+                  <Icon name={category.icon as any} size={20} className="text-primary" />
+                  <h3 className="text-lg font-semibold">{category.category}</h3>
+                  <Badge variant="secondary" className="ml-2">
+                    {category.cases.length} {category.cases.length === 1 ? 'кейс' : 'кейса'}
+                  </Badge>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  {category.cases.map((caseItem) => (
+                    <Card 
+                      key={caseItem.id} 
+                      className="p-4 hover:shadow-lg transition-shadow cursor-pointer group"
+                      onClick={() => setSelectedCase(caseItem)}
+                    >
+                      <div className="mb-4">
+                        <div 
+                          className="w-full aspect-[1.586/1] rounded-xl p-6 relative overflow-hidden"
+                          style={{ backgroundColor: caseItem.backgroundColor }}
+                        >
+                          <div className="absolute top-0 right-0 w-48 h-48 rounded-full blur-3xl opacity-20"
+                            style={{ backgroundColor: caseItem.accentColor }}
+                          />
+                          
+                          <div className="relative z-10 h-full flex flex-col justify-between">
+                            <div className="flex items-start justify-between">
+                              <div 
+                                className="w-12 h-12 rounded-lg flex items-center justify-center text-lg font-bold"
+                                style={{ 
+                                  backgroundColor: caseItem.accentColor,
+                                  color: caseItem.backgroundColor
+                                }}
+                              >
+                                {caseItem.logoText}
+                              </div>
+                              <div 
+                                className="w-12 h-12 rounded-md flex items-center justify-center bg-white p-1.5"
+                              >
+                                <QRCodeSVG 
+                                  value={`LOYALTY:${caseItem.cardNumber}:${caseItem.businessName}:${caseItem.discount}%`}
+                                  size={36}
+                                  level="H"
+                                  includeMargin={false}
+                                />
+                              </div>
+                            </div>
+
+                            <div>
+                              <h4 
+                                className="text-lg font-bold mb-1"
+                                style={{ color: caseItem.backgroundColor === '#FFFFFF' ? '#000000' : '#FFFFFF' }}
+                              >
+                                {caseItem.businessName}
+                              </h4>
+                              
+                              <div 
+                                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold"
+                                style={{ 
+                                  backgroundColor: caseItem.accentColor,
+                                  color: caseItem.backgroundColor
+                                }}
+                              >
+                                <Icon name="Gift" size={14} />
+                                {caseItem.discount}%
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+
+                      <div className="space-y-2">
+                        <h4 className="font-semibold flex items-center justify-between">
+                          {caseItem.name}
+                          <Icon name="ChevronRight" size={16} className="opacity-0 group-hover:opacity-100 transition-opacity" />
+                        </h4>
+                        <p className="text-sm text-muted-foreground">{caseItem.description}</p>
+                        <Button 
+                          className="w-full mt-2"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleApplyCase(caseItem);
+                          }}
+                        >
+                          <Icon name="Download" size={16} className="mr-2" />
+                          Применить кейс
+                        </Button>
+                      </div>
+                    </Card>
+                  ))}
+                </div>
+              </div>
+            ))}
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
