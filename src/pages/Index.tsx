@@ -6,6 +6,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Separator } from '@/components/ui/separator';
 import Icon from '@/components/ui/icon';
+import { QRCodeSVG } from 'qrcode.react';
 
 const templates = [
   { id: 1, name: 'Классика', color: '#1A1F2C', accent: '#8B5CF6', style: 'classic' },
@@ -238,13 +239,13 @@ const Index = () => {
                         {cardData.logoText}
                       </div>
                       <div 
-                        className="w-16 h-16 rounded-lg flex items-center justify-center"
-                        style={{ backgroundColor: `${cardData.accentColor}20` }}
+                        className="w-16 h-16 rounded-lg flex items-center justify-center bg-white p-2"
                       >
-                        <Icon 
-                          name="QrCode" 
-                          size={40}
-                          style={{ color: cardData.accentColor }}
+                        <QRCodeSVG 
+                          value={`LOYALTY:${cardData.cardNumber}:${cardData.businessName}:${cardData.discount}%`}
+                          size={48}
+                          level="H"
+                          includeMargin={false}
                         />
                       </div>
                     </div>
